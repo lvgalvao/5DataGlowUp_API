@@ -127,61 +127,71 @@ def read_root():
   "instant_bookable": "f"
 }
 '''
+    formatted_json = json.dumps(json_example, indent=4)  # 'indent=4' adiciona 4 espaços de indentação
 
     # Construindo a resposta HTML
     content = f'''
-    <html>
-        <head>
-            <title>Bem-vindo à nossa primeira API!</title>
-            <style>
-                body {
-                    background-color: #282c34;
-                    color: white;
-                    font-family: Arial, sans-serif;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    height: 100vh;
-                    margin: 0;
-                }
-                h1 {
-                    margin-bottom: 20px;
-                }
-                p {
-                    margin-bottom: 5px;
-                }
-                a {
-                    color: #09f;
-                    text-decoration: none;
-                }
-                a:hover {
-                    text-decoration: underline;
-                }
-            </style>
-            <script>
-            function copyToClipboard() {{
-                var copyText = document.getElementById("myJson");
-                copyText.select();
-                copyText.setSelectionRange(0, 99999); // Para dispositivos móveis
-                document.execCommand("copy");
-                alert("Copied the text: " + copyText.value);
+<html>
+    <head>
+        <title>Bem-vindo à nossa primeira API!</title>
+        <style>
+            body {{
+                background-color: #282c34;
+                color: white;
+                font-family: Arial, sans-serif;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                margin: 0;
             }}
-            </script>
-        </head>
-        <body>
-            <div>
-                <h1>Nossa primeira API!</h1>
-                <p>Visite <a href="https://fivedataglowup.onrender.com/docs">aqui</a> para popular o banco.</p>
-                <p>Repositório do projeto: <a href="https://github.com/lvgalvao/5DataGlowUp_lvgalvaofilho" target="_blank">GitHub</a></p>
-                <p>Documentação do projeto: <a href="https://lvgalvao.github.io/5DataGlowUp_lvgalvaofilho/" target="_blank">GitHub Pages</a></p>
-                <p><strong>Exemplo de JSON:</strong></p>
-                <textarea id="myJson" readonly>{json_example}</textarea><br><br>
-                <button onclick="copyToClipboard()">Copiar JSON</button>
-            </div>
-        </body>
-    </html>
-    '''
+            h1 {{
+                margin-bottom: 20px;
+            }}
+            p {{
+                margin-bottom: 5px;
+            }}
+            a {{
+                color: #09f;
+                text-decoration: none;
+            }}
+            a:hover {{
+                text-decoration: underline;
+            }}
+            /* Aqui estão os estilos adicionais para a textarea */
+            #myJson {{
+                width: 600px; /* ou qualquer largura que você preferir */
+                height: 300px; /* ou qualquer altura que você preferir */
+                font-size: 16px; /* opcional: ajusta o tamanho da fonte dentro da textarea */
+                white-space: nowrap; /* impede que o texto quebre para a próxima linha */
+                overflow-x: auto; /* adiciona uma barra de rolagem se o conteúdo for muito largo */
+            }}
+        </style>
+        <script>
+        function copyToClipboard() {{
+            var copyText = document.getElementById("myJson");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // Para dispositivos móveis
+            document.execCommand("copy");
+            alert("Copied the text: " + copyText.value);
+        }}
+        </script>
+    </head>
+    <body>
+        <div>
+            <h1>Nossa primeira API!</h1>
+            <p>Visite <a href="https://fivedataglowup.onrender.com/docs">aqui</a> para popular o banco.</p>
+            <p>Repositório do projeto: <a href="https://github.com/lvgalvao/5DataGlowUp_lvgalvaofilho" target="_blank">GitHub</a></p>
+            <p>Documentação do projeto: <a href="https://lvgalvao.github.io/5DataGlowUp_lvgalvaofilho/" target="_blank">GitHub Pages</a></p>
+            <p><strong>Exemplo de JSON:</strong></p>
+            <textarea id="myJson" readonly style="white-space: pre-wrap;">{json_example}</textarea><br><br>
+            <button onclick="copyToClipboard()">Copiar JSON</button>
+        </div>
+    </body>
+</html>
+'''
+
     return HTMLResponse(content=content)
 
 if __name__ == "__main__":
