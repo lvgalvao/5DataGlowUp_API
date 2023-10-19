@@ -84,8 +84,52 @@ async def add_listing(listing: Listing):
 # Este método é apenas para verificação de funcionamento
 @app.get("/", response_class=HTMLResponse)
 def read_root():
-    # Adicionando CSS para estilização
-    content = """
+    # Este é o seu JSON de exemplo como uma string
+    json_example = '''
+{
+  "name": "Beautiful Flat in le Village Montmartre, Paris",
+  "host_id": 1466919,
+  "host_since": "2011-12-03",
+  "host_location": "Paris, Ile-de-France, France",
+  "host_response_time": null,
+  "host_response_rate": null,
+  "host_acceptance_rate": null,
+  "host_is_superhost": "f",
+  "host_total_listings_count": 1,
+  "host_has_profile_pic": "t",
+  "host_identity_verified": "f",
+  "neighbourhood": "Buttes-Montmartre",
+  "district": null,
+  "city": "Paris",
+  "latitude": 48.88668,
+  "longitude": 2.33343,
+  "property_type": "Entire apartment",
+  "room_type": "Entire place",
+  "accommodates": 2,
+  "bedrooms": 1,
+  "amenities": [
+    "Heating",
+    "Kitchen",
+    "Washer",
+    "Wifi",
+    "Long term stays allowed"
+  ],
+  "price": 53,
+  "minimum_nights": 2,
+  "maximum_nights": 1125,
+  "review_scores_rating": 100,
+  "review_scores_accuracy": 10,
+  "review_scores_cleanliness": 10,
+  "review_scores_checkin": 10,
+  "review_scores_communication": 10,
+  "review_scores_location": 10,
+  "review_scores_value": 10,
+  "instant_bookable": "f"
+}
+'''
+
+    # Construindo a resposta HTML
+    content = f'''
     <html>
         <head>
             <title>Bem-vindo à nossa primeira API!</title>
@@ -115,6 +159,15 @@ def read_root():
                     text-decoration: underline;
                 }
             </style>
+            <script>
+            function copyToClipboard() {{
+                var copyText = document.getElementById("myJson");
+                copyText.select();
+                copyText.setSelectionRange(0, 99999); // Para dispositivos móveis
+                document.execCommand("copy");
+                alert("Copied the text: " + copyText.value);
+            }}
+            </script>
         </head>
         <body>
             <div>
@@ -122,10 +175,13 @@ def read_root():
                 <p>Visite <a href="https://fivedataglowup.onrender.com/docs">aqui</a> para popular o banco.</p>
                 <p>Repositório do projeto: <a href="https://github.com/lvgalvao/5DataGlowUp_lvgalvaofilho" target="_blank">GitHub</a></p>
                 <p>Documentação do projeto: <a href="https://lvgalvao.github.io/5DataGlowUp_lvgalvaofilho/" target="_blank">GitHub Pages</a></p>
+                <p><strong>Exemplo de JSON:</strong></p>
+                <textarea id="myJson" readonly>{json_example}</textarea><br><br>
+                <button onclick="copyToClipboard()">Copiar JSON</button>
             </div>
         </body>
     </html>
-    """
+    '''
     return HTMLResponse(content=content)
 
 if __name__ == "__main__":
