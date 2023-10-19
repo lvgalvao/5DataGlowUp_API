@@ -83,3 +83,12 @@ async def add_listing(listing: Listing):
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+if __name__ == "__main__":
+    import uvicorn
+
+    # Get the port from the environment variable or default to 10000 if it's not provided
+    PORT = int(os.getenv("PORT", 10000))
+    
+    # Host 0.0.0.0 is used to make the server publicly available.
+    uvicorn.run("main:app", host="0.0.0.0", port=PORT, log_level="info")
