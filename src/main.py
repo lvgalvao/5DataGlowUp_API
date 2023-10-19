@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
+from fastapi.responses import HTMLResponse
+
 
 app = FastAPI()
 
@@ -80,9 +82,51 @@ async def add_listing(listing: Listing):
     return listing
 
 # Este método é apenas para verificação de funcionamento
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 def read_root():
-    return {"Hello": "World"}
+    # Adicionando CSS para estilização
+    content = """
+    <html>
+        <head>
+            <title>Bem-vindo à nossa primeira API!</title>
+            <style>
+                body {
+                    background-color: #282c34;
+                    color: white;
+                    font-family: Arial, sans-serif;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100vh;
+                    margin: 0;
+                }
+                h1 {
+                    margin-bottom: 20px;
+                }
+                p {
+                    margin-bottom: 5px;
+                }
+                a {
+                    color: #09f;
+                    text-decoration: none;
+                }
+                a:hover {
+                    text-decoration: underline;
+                }
+            </style>
+        </head>
+        <body>
+            <div>
+                <h1>Nossa primeira API!</h1>
+                <p>Visite <a href="https://fivedataglowup.onrender.com/docs">aqui</a> para popular o banco.</p>
+                <p>Repositório do projeto: <a href="https://github.com/lvgalvao/5DataGlowUp_lvgalvaofilho" target="_blank">GitHub</a></p>
+                <p>Documentação do projeto: <a href="https://lvgalvao.github.io/5DataGlowUp_lvgalvaofilho/" target="_blank">GitHub Pages</a></p>
+            </div>
+        </body>
+    </html>
+    """
+    return HTMLResponse(content=content)
 
 if __name__ == "__main__":
     import uvicorn
