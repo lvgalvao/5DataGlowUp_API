@@ -1,18 +1,23 @@
-from fastapi import FastAPI, HTTPException, status
-from pydantic import BaseModel, Field
-from typing import List, Optional
 import json
 import os
-import uuid  # Usado para gerar um nome de arquivo único
+import uuid
+from typing import List, Optional
+
+import boto3
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException, status
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
 app = FastAPI()
 
-# Diretório onde os arquivos JSON serão salvos.
-directory = './listings'
+# Carrega as variáveis de ambiente do arquivo .env
+load_dotenv()
 
-# Verifique se o diretório existe, se não, crie o diretório
-if not os.path.exists(directory):
-    os.makedirs(directory)
+# Recupera as variáveis de ambiente após o dotenv ter carregado os valores
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 
 # Definição do modelo de dados que estamos esperando no JSON
 class Listing(BaseModel):
@@ -50,28 +55,29 @@ class Listing(BaseModel):
     review_scores_value: int
     instant_bookable: str
 
-def save_listing(listing: dict):
-    """Salva o anúncio em um arquivo JSON separado."""
-    unique_filename = str(listing["listing_id"])
-    file_path = os.path.join(directory, f'{unique_filename}.json')
+# Inicializar o cliente S3
+s3_client = boto3.client('s3', 
+                         aws_access_key_id=AWS_ACCESS_KEY_ID,
+                         aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
 
-    with open(file_path, 'w') as file:
-        json.dump(listing, file, indent=4)  # Garante uma formatação legível.
+def save_to_s3(file_content, file_name):
+    try:
+        s3_client.put_object(Body=file_content, Bucket=AWS_STORAGE_BUCKET_NAME, Key=file_name)
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            content={"message": f"Error: {e}"})
+
 
 @app.post("/add_listing/", response_model=Listing, status_code=status.HTTP_201_CREATED)
 async def add_listing(listing: Listing):
-    """
-    Recebe os dados de um novo anúncio, salva em um arquivo JSON, e retorna os dados do anúncio.
-    """
-    # Gera um ID único para o listing baseado em UUID
-    listing_id = uuid.uuid4().int  # Gera um número inteiro com base no UUID
-    listing.listing_id = listing_id  # Atribui o ID ao anúncio
+    unique_filename = f"{uuid.uuid4()}.json"
+    listing_json = listing.json()
+    
+    response = save_to_s3(listing_json, unique_filename)
+    if response:
+        return response
 
-    # Converte o modelo Pydantic para um dicionário antes de salvar
-    listing_dict = listing.model_dump()
-
-    save_listing(listing_dict)  # Salva os dados do anúncio em um arquivo JSON.
-    return listing  # Retorna os dados do anúncio.
+    return listing
 
 # Este método é apenas para verificação de funcionamento
 @app.get("/")
